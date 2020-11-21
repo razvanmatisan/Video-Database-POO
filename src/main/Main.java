@@ -188,13 +188,13 @@ public final class Main {
                             arrayResult.add(out);
                         }
                         case "awards" -> {
-                            List<String> sortedActorsByAwards = actorDB.awards(sortType, number, videoDB);
+                            List<String> sortedActorsByAwards = actorDB.awards(sortType, filters);
                             out = fileWriter.writeFile(command.getActionId(), "",
                                     "Query result: " + sortedActorsByAwards);
                             arrayResult.add(out);
                         }
                         case "filter_description" -> {
-                            List<String> sortedActorsByDescription = actorDB.filterDescription(sortType, number, videoDB);
+                            List<String> sortedActorsByDescription = actorDB.filterDescription(sortType, filters);
                             out = fileWriter.writeFile(command.getActionId(), "",
                                     "Query result: " + sortedActorsByDescription);
                             arrayResult.add(out);
@@ -251,8 +251,14 @@ public final class Main {
 
                         case "best_unseen":
                             String bestRatedUnseenRecommendation = user.bestUnseen(videoDB);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "BestRatedUnseenRecommendation result: " + bestRatedUnseenRecommendation);
+                            if (!bestRatedUnseenRecommendation.equals("")) {
+                                out = fileWriter.writeFile(command.getActionId(), "",
+                                        "BestRatedUnseenRecommendation result: " + bestRatedUnseenRecommendation);
+                            } else {
+                                out = fileWriter.writeFile(command.getActionId(), "",
+                                        "BestRatedUnseenRecommendation cannot be applied!");
+                            }
+
                             arrayResult.add(out);
                             break;
                         case "popular":

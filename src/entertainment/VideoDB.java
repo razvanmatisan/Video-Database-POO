@@ -95,11 +95,11 @@ public class VideoDB {
     public void setNumberFavoritesAllVideos(UserDB userDB) {
         for (User user : userDB.getUserHashMap().values()) {
             for (Video movie : movies) {
-                user.setNumberFavoritesVideo(movie);
+                userDB.setNumberFavoritesVideo(movie);
             }
 
             for (Video serial : serials) {
-                user.setNumberFavoritesVideo(serial);
+                userDB.setNumberFavoritesVideo(serial);
             }
         }
     }
@@ -107,11 +107,11 @@ public class VideoDB {
     public void setNumberViewsAllVideos(UserDB userDB) {
         for (User user : userDB.getUserHashMap().values()) {
             for (Video movie : movies) {
-                user.setNumberViewsVideo(movie);
+                userDB.setNumberViewsVideo(movie);
             }
 
             for (Video serial : serials) {
-                user.setNumberViewsVideo(serial);
+                userDB.setNumberViewsVideo(serial);
             }
         }
     }
@@ -140,13 +140,16 @@ public class VideoDB {
                                    HashMap<String, Video> videoHashMap) {
         List<String> years = filters.get(0);
         List<String> genres = filters.get(1);
+        //genres.sort(String::compareTo);
 
         for (Video video : videoHashMap.values()) {
             video.calculateFinalRating();
             int year = video.getYear();
             List<String> genre = video.getGenres();
+//            genre.sort(String::compareTo);
 
-            if (video.getRatingVideo() != 0.0 && years.contains("" + year) && genres.contains(genre.get(0))) {
+            if (video.getRatingVideo() != 0.0 && (years.get(0) == null || years.contains("" + year)) &&
+                    (genres.get(0) == null || genre.containsAll(genres))) {
                 videos.add(video);
             }
         }
@@ -158,8 +161,10 @@ public class VideoDB {
         switch(objectType) {
             case "movies":
                 filterVideosRating(videos, filters, movieHashMap);
+                break;
             case "shows":
                 filterVideosRating(videos, filters, serialHashMap);
+                break;
         }
 
         sortVideosByRating(sortType, videos);
@@ -190,21 +195,22 @@ public class VideoDB {
         }
     }
 
-    public void filterVideosFavorite(List<Video> videos, List<List<String>> filters,
-                                HashMap<String, Video> videoHashMap, UserDB userDB) {
+    public void filterVideosFavorite(List<Video> copyVideos, List<List<String>> filters,
+                                List<Video> videos, UserDB userDB) {
         List<String> years = filters.get(0);
         List<String> genres = filters.get(1);
 
-        for (Video video : videoHashMap.values()) {
+        for (Video video : videos) {
             int year = video.getYear();
             List<String> genre = video.getGenres();
 
-            if (years.contains("" + year) && Collections.indexOfSubList(genre, genres) != -1) {
+            if ((years.get(0) == null || years.contains("" + year))
+                    && (genres.get(0) == null || genre.containsAll(genres))) {
                 for (User user : userDB.getUserHashMap().values()) {
-                    user.setNumberFavoritesVideo(video);
+                    userDB.setNumberFavoritesVideo(video);
                 }
                 if (video.getNumberOfFavorites() != 0) {
-                    videos.add(video);
+                    copyVideos.add(video);
                 }
             }
         }
@@ -217,15 +223,17 @@ public class VideoDB {
 
         switch(objectType) {
             case "movies":
-                filterVideosFavorite(videos, filters, movieHashMap, userDB);
+                filterVideosFavorite(videos, filters, movies, userDB);
+                break;
             case "shows":
-                filterVideosFavorite(videos, filters, serialHashMap, userDB);
+                filterVideosFavorite(videos, filters, serials, userDB);
+                break;
         }
 
-        sortVideosByFavorite(sortType, movies);
-        sortVideosByFavorite(sortType, serials);
+        sortVideosByFavorite(sortType, videos);
 
         List<String> copyVideos = new ArrayList<>();
+
         for (int i = 0; i < Math.min(videos.size(), number); i++) {
             copyVideos.add(videos.get(i).getTitle());
         }
@@ -251,17 +259,20 @@ public class VideoDB {
         }
     }
 
-    public void filterVideosLongest(List<Video> videos, List<List<String>> filters,
-                                    HashMap<String, Video> videoHashMap) {
+    public void filterVideosLongest(List<Video> copyVideos, List<List<String>> filters,
+                                    List<Video> videos) {
         List<String> years = filters.get(0);
         List<String> genres = filters.get(1);
 
-        for (Video video : videoHashMap.values()) {
+        for (Video video : videos) {
             int year = video.getYear();
             List<String> genre = video.getGenres();
 
-            if (years.contains("" + year) && Collections.indexOfSubList(genre, genres) != -1) {
-                videos.add(video);
+            //System.out.println();
+
+            if ((years.get(0) == null || years.contains("" + year))
+                && (genres.get(0) == null || genre.containsAll(genres))) {
+                copyVideos.add(video);
             }
         }
     }
@@ -272,9 +283,11 @@ public class VideoDB {
 
         switch(objectType) {
             case "movies":
-                filterVideosLongest(videos, filters, movieHashMap);
+                filterVideosLongest(videos, filters, movies);
+                break;
             case "shows":
-                filterVideosLongest(videos, filters, serialHashMap);
+                filterVideosLongest(videos, filters, serials);
+                break;
         }
 
         sortVideosByDuration(sortType, videos);
@@ -305,22 +318,25 @@ public class VideoDB {
         }
     }
 
-    public void filterVideosMostViewed(List<Video> videos, List<List<String>> filters,
-                                     HashMap<String, Video> videoHashMap, UserDB userDB) {
+    public void filterVideosMostViewed(List<Video> copyVideos, List<List<String>> filters,
+                                     List<Video> videos, UserDB userDB) {
         List<String> years = filters.get(0);
         List<String> genres = filters.get(1);
+        genres.sort(String::compareTo);
 
-        for (Video video : videoHashMap.values()) {
+        for (Video video : videos) {
             int year = video.getYear();
             List<String> genre = video.getGenres();
+            genre.sort(String::compareTo);
 
-            if (years.contains("" + year) && Collections.indexOfSubList(genre, genres) != -1) {
+            if ((years.get(0) == null || years.contains("" + year)) &&
+                    (genres.get(0) == null || genre.containsAll(genres))) {
                 for (User user : userDB.getUserHashMap().values()) {
-                    user.setNumberViewsVideo(video);
+                    userDB.setNumberViewsVideo(video);
                 }
 
                 if (video.getNumberViews() != 0) {
-                    videos.add(video);
+                    copyVideos.add(video);
                 }
             }
         }
@@ -332,17 +348,25 @@ public class VideoDB {
 
         switch(objectType) {
             case "movies":
-                filterVideosMostViewed(videos, filters, movieHashMap, userDB);
+                filterVideosMostViewed(videos, filters, movies, userDB);
+                break;
             case "shows":
-                filterVideosMostViewed(videos, filters, serialHashMap, userDB);
+                filterVideosMostViewed(videos, filters, serials, userDB);
+                break;
         }
 
         sortVideosByViews(sortType, videos);
 
         List<String> copyVideos = new ArrayList<>();
+        List<Integer> views = new ArrayList<>();
         for (int i = 0; i < Math.min(videos.size(), number); i++) {
             copyVideos.add(videos.get(i).getTitle());
+            views.add(videos.get(i).getNumberViews());
         }
+
+        System.out.println(copyVideos);
+        System.out.println(views);
+        System.out.println("-----------");
 
         return copyVideos;
     }

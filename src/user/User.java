@@ -45,33 +45,6 @@ public class User {
         return numberGivenRatings;
     }
 
-    public void setNumberFavoritesVideo(Video video) {
-        Integer numberOfFavorites;
-
-        for (String favorite : favoriteVideos) {
-            if (video.getTitle().equals(favorite)) {
-                numberOfFavorites = video.getNumberOfFavorites();
-                numberOfFavorites += 1;
-                video.setNumberOfFavorites(numberOfFavorites);
-                break;
-            }
-        }
-    }
-
-    public void setNumberViewsVideo(Video video) {
-        Integer numberOfViews;
-        String title = video.getTitle();
-
-        if (history.containsKey(title)) {
-            numberOfViews = history.get(title);
-
-            Integer actualNumberOfViews = video.getNumberViews();
-            actualNumberOfViews += numberOfViews;
-            video.setNumberViews(actualNumberOfViews);
-
-        }
-    }
-
     /* ////////////////////// Commands ////////////////////// */
     public String favorite(String title) {
         if (favoriteVideos.contains(title)) {
@@ -121,16 +94,13 @@ public class User {
     /* ////////////////////// Recommendations ////////////////////// */
 
     private String firstUnseenVideo(List<Video> videos) {
-        String title = "";
-
         for (Video video : videos) {
-            title = video.getTitle();
+            String title = video.getTitle();
             if (!history.containsKey(title)) {
                 return title;
             }
         }
-
-        return title;
+        return "";
     }
 
     /* /////////// 1. Standard /////////// */
@@ -195,6 +165,8 @@ public class User {
 
             while (!popularGenres.isEmpty()) {
                 String genre = Collections.max(popularGenres.entrySet(), Map.Entry.comparingByValue()).getKey();
+//                System.out.println(genre);
+                //System.out.println(Collections.max(popularGenres.entrySet(), Map.Entry.comparingByValue()));
 
                 for (Video movie : movies) {
                     if (movie.getGenres().contains(genre) && !history.containsKey(movie.getTitle())) {
@@ -210,9 +182,19 @@ public class User {
                             break;
                         }
                     }
+                } else {
+                    break;
                 }
-                popularGenres.remove(genre);
+
+                if (title.equals("")) {
+                    popularGenres.remove(genre);
+                } else {
+                    break;
+                }
             }
+
+            //System.out.println("-----------");
+
             videoDB.setPopularGenresAllVideos();
             return title;
         }

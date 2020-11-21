@@ -1,8 +1,12 @@
 package actor;
 
-import entertainment.*;
+import entertainment.Video;
+import entertainment.VideoDB;
+import utils.Utils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ActorDB {
     private HashMap<String, Actor> actorHashMap = new HashMap<>();
@@ -15,13 +19,9 @@ public class ActorDB {
         return actorHashMap;
     }
 
-    public void setActorHashMap(HashMap<String, Actor> actorHashMap) {
-        this.actorHashMap = actorHashMap;
-    }
-
     /* ////////////////////// Queries for Actor ////////////////////// */
 
-    public void sortActorsByRating(String sortType, List<Actor> actors) {
+    private void sortActorsByRating(String sortType, List<Actor> actors) {
         switch (sortType) {
             case "asc" -> actors.sort((a1, a2) -> {
                 if (a1.getRating().equals(a2.getRating())) {
@@ -41,11 +41,11 @@ public class ActorDB {
     public List<String> average(String sortType, int number, VideoDB videoDB) {
         List<Actor> actors = new ArrayList<>();
 
-        HashMap<String, Video> dbMovie = videoDB.getMovieHashMap();
-        HashMap<String, Video> dbSerial = videoDB.getSerialHashMap();
+        List<Video> movies = videoDB.getMovies();
+        List<Video> serials = videoDB.getSerials();
 
         for (Actor actor : actorHashMap.values()) {
-            actor.calculateRating(dbMovie, dbSerial);
+            actor.calculateRating(movies, serials);
             if (actor.getRating() != 0) {
                 actors.add(actor);
             }
@@ -54,22 +54,95 @@ public class ActorDB {
         sortActorsByRating(sortType, actors);
 
         List<String> copyActors = new ArrayList<>();
+
         for (int i = 0; i < Math.min(actors.size(), number); i++) {
             copyActors.add(actors.get(i).getName());
+
         }
 
         return copyActors;
     }
 
-    public List<String> awards(String sortType, int number, VideoDB videoDB) {
-        for (Actor actor : actorHashMap.values()) {
-            actor.setNumberAwardsOneActor();
+    public void sortActorsByAwards(String sortType, List<Actor> actors) {
+        switch (sortType) {
+            case "asc" -> actors.sort((a1, a2) -> {
+                if (a1.getNumberAwards().equals(a2.getNumberAwards())) {
+                    return a1.getName().compareTo(a2.getName());
+                }
+                return a1.getNumberAwards().compareTo(a2.getNumberAwards());
+            });
+            case "desc" -> Collections.sort(actors, (a1, a2) -> {
+                if (a2.getNumberAwards().equals(a1.getNumberAwards())) {
+                    return a2.getName().compareTo(a1.getName());
+                }
+                return a2.getNumberAwards().compareTo(a1.getNumberAwards());
+            });
         }
-        return new ArrayList<>();
     }
 
-    public List<String> filterDescription(String sortType, int number, VideoDB videoDB) {
+    public List<String> awards(String sortType, List<List<String>> filters) {
+        List<ActorsAwards> filterActorAwards = new ArrayList<>();
+        List<Actor> actors = new ArrayList<>();
 
-        return new ArrayList<>();
+        List<String> awards = filters.get(3);
+
+        for (String award : awards) {
+            filterActorAwards.add(Utils.stringToAwards(award));
+        }
+
+        for (Actor actor : actorHashMap.values()) {
+            List<ActorsAwards> actorAwards = new ArrayList<>(actor.getAwards().keySet());
+
+            if (actorAwards.containsAll(filterActorAwards)) {
+                actor.setNumberAwardsOneActor();
+                actors.add(actor);
+            }
+        }
+
+        sortActorsByAwards(sortType, actors);
+
+        List<String> copyActors = new ArrayList<>();
+
+        for (Actor actor : actors) {
+            copyActors.add(actor.getName());
+        }
+
+        return copyActors;
+    }
+
+    public List<String> filterDescription(String sortType, List<List<String>> filters) {
+        List<ActorsAwards> filterActorAwards = new ArrayList<>();
+        List<Actor> actors = new ArrayList<>();
+
+        List<String> words = filters.get(2);
+
+        for (Actor actor : actorHashMap.values()) {
+            int ok = 1;
+            String description = actor.getCareerDescription();
+            for (String word : words) {
+                Pattern pattern = Pattern.compile("[ .,!?'(-]" + word + "[ ,.!?')-]", Pattern.CASE_INSENSITIVE);
+                Matcher matcher = pattern.matcher(description);
+                if (!matcher.find()) {
+                    ok = 0;
+                    break;
+                }
+            }
+            if (ok == 1) {
+                actors.add(actor);
+            }
+        }
+
+        switch (sortType) {
+            case "asc" -> actors.sort(Comparator.comparing(Actor::getName));
+            case "desc" -> actors.sort((a1, a2) -> a2.getName().compareTo(a1.getName()));
+        }
+
+        List<String> copyActors = new ArrayList<>();
+
+        for (Actor actor : actors) {
+            copyActors.add(actor.getName());
+        }
+
+        return copyActors;
     }
 }

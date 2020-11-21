@@ -1,9 +1,9 @@
 package actor;
 
-import entertainment.*;
+import entertainment.Video;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Actor {
@@ -72,8 +72,8 @@ public class Actor {
         numberAwards = finalNumberAwards;
     }
 
-    public void calculateRating(HashMap<String, Video> movieDB, HashMap<String, Video> serialDB) {
-        Video video;
+    public void calculateRating(List<Video> movies, List<Video> serials) {
+        Video video = null;
 
         Double averageRating = 0.0;
         int numberVideos = 0;
@@ -81,11 +81,23 @@ public class Actor {
         for (String title : filmography) {
             Double sum = 0.0;
 
-            if (movieDB.containsKey(title)) {
-                video = movieDB.get(title);
-            } else if (serialDB.containsKey(title)) {
-                video = serialDB.get(title);
-            } else {
+            for (Video movie : movies) {
+                if (movie.getTitle().equals(title)) {
+                    video = movie;
+                    break;
+                }
+            }
+
+            if (video == null) {
+                for (Video serial : serials) {
+                    if (serial.getTitle().equals(title)) {
+                        video = serial;
+                        break;
+                    }
+                }
+            }
+
+            if (video == null) {
                 continue;
             }
 
@@ -99,7 +111,11 @@ public class Actor {
 
         }
 
-        averageRating /= numberVideos;
-        this.rating = averageRating;
+        if (numberVideos == 0) {
+            this.rating = 0.0;
+        } else {
+            averageRating /= numberVideos;
+            this.rating = averageRating;
+        }
     }
 }

@@ -1,5 +1,7 @@
 package user;
 
+import entertainment.Video;
+
 import java.util.*;
 
 public class UserDB {
@@ -15,6 +17,35 @@ public class UserDB {
 
     public void setUserHashMap(HashMap<String, User> userHashMap) {
         this.userHashMap = userHashMap;
+    }
+
+    public void setNumberViewsVideo(Video video) {
+        Integer numberOfViews = 0;
+        String title = video.getTitle();
+
+        for (User user : userHashMap.values()) {
+            Map<String, Integer> history = user.getHistory();
+            if (history.containsKey(title)) {
+                numberOfViews += history.get(title);
+            }
+        }
+
+        video.setNumberViews(numberOfViews);
+    }
+
+    public void setNumberFavoritesVideo(Video video) {
+        Integer numberOfFavorites = 0;
+
+        for (User user : userHashMap.values()) {
+            List<String> favoriteVideos = user.getFavoriteVideos();
+            for (String favorite : favoriteVideos) {
+                if (video.getTitle().equals(favorite)) {
+                    numberOfFavorites += 1;
+                }
+            }
+        }
+        video.setNumberOfFavorites(numberOfFavorites);
+
     }
 
     /* ////////////////////// Query User ////////////////////// */
