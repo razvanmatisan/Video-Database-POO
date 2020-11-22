@@ -29,14 +29,6 @@ public final class Input {
      */
     private final List<SerialInputData> serialsData;
 
-    public Input() {
-        this.actorsData = null;
-        this.usersData = null;
-        this.commandsData = null;
-        this.moviesData = null;
-        this.serialsData = null;
-    }
-
     public Input(final List<ActorInputData> actors, final List<UserInputData> users,
                  final List<ActionInputData> commands,
                  final List<MovieInputData> movies,

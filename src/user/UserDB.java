@@ -5,7 +5,7 @@ import entertainment.Video;
 import java.util.*;
 
 public class UserDB {
-    private HashMap<String, User> userHashMap = new HashMap<>();
+    private final HashMap<String, User> userHashMap = new HashMap<>();
 
     public UserDB(List<User> users) {
         for (User user : users) this.userHashMap.put(user.getUsername(), user);
@@ -15,11 +15,7 @@ public class UserDB {
         return userHashMap;
     }
 
-    public void setUserHashMap(HashMap<String, User> userHashMap) {
-        this.userHashMap = userHashMap;
-    }
-
-    public void setNumberViewsVideo(Video video) {
+    public void setNumberViewsVideo(final Video video) {
         Integer numberOfViews = 0;
         String title = video.getTitle();
 
@@ -33,8 +29,8 @@ public class UserDB {
         video.setNumberViews(numberOfViews);
     }
 
-    public void setNumberFavoritesVideo(Video video) {
-        Integer numberOfFavorites = 0;
+    public void setNumberFavoritesVideo(final Video video) {
+        int numberOfFavorites = 0;
 
         for (User user : userHashMap.values()) {
             List<String> favoriteVideos = user.getFavoriteVideos();
@@ -50,7 +46,7 @@ public class UserDB {
 
     /* ////////////////////// Query User ////////////////////// */
 
-    public void sortUsersByRatings(String sortType, List<User> users) {
+    public void sortUsersByRatings(final String sortType, final List<User> users) {
         switch (sortType) {
             case "asc" -> users.sort((u1, u2) -> {
                 if (u1.getNumberGivenRatings().equals(u2.getNumberGivenRatings())) {
@@ -67,7 +63,7 @@ public class UserDB {
         }
     }
 
-    public List<String> numberOfRatings(String sortType, int number) {
+    public List<String> numberOfRatings(final String sortType, final int number) {
         List<User> users = new ArrayList<>();
 
         for (User user : userHashMap.values()) {

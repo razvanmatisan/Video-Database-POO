@@ -5,14 +5,13 @@ import java.util.List;
 
 public class Movie extends Video {
     private final Integer duration;
-    private List<Double> ratings;
+    private final List<Double> ratings = new ArrayList<>();
 
     public Movie(final String title, final ArrayList<String> cast,
                           final ArrayList<String> genres, final int year,
                           final int duration) {
         super(title, year, cast, genres);
         this.duration = duration;
-        this.ratings = new ArrayList<>();
     }
 
     public Integer getDuration() {
@@ -24,7 +23,7 @@ public class Movie extends Video {
     }
 
     @Override
-    public void giveRating(final double rating, int numberSeason) {
+    public void giveRating(final double rating, final int numberSeason) {
         /*
         Daca are sezoane, atunci nu este Movie.
          */

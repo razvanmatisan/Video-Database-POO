@@ -46,7 +46,6 @@ public final class Constants {
     public static final String SEASON = "season";
     public static final String GRADE = "grade";
     public static final String AWARDS = "awards";
-    public static final String NUM_RATINGS = "num_ratings";
     public static final String FILTER_DESCRIPTIONS = "filter_description";
     public static final String WORDS = "words";
     public static final String REVIEWS = "reviews";

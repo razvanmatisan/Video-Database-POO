@@ -10,7 +10,7 @@ public class Actor {
     private String name;
     private String careerDescription;
     private ArrayList<String> filmography;
-    private Map<ActorsAwards, Integer> awards;
+    private final Map<ActorsAwards, Integer> awards;
     private Double rating;
 
     private Integer numberAwards;
@@ -64,23 +64,19 @@ public class Actor {
 
     void setNumberAwardsOneActor() {
         Integer finalNumberAwards = 0;
-
         for (Integer number : awards.values()) {
             finalNumberAwards += number;
         }
-
         numberAwards = finalNumberAwards;
     }
 
-    public void calculateRating(List<Video> movies, List<Video> serials) {
+    public void calculateRating(final List<Video> movies, final List<Video> serials) {
         Video video = null;
 
-        Double averageRating = 0.0;
+        double averageRating = 0.0;
         int numberVideos = 0;
 
         for (String title : filmography) {
-            Double sum = 0.0;
-
             for (Video movie : movies) {
                 if (movie.getTitle().equals(title)) {
                     video = movie;

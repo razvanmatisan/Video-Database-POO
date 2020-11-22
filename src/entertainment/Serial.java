@@ -31,7 +31,7 @@ public class Serial extends Video {
     }
 
     @Override
-    public void giveRating(final double rating, int currentSeason) {
+    public void giveRating(final double rating, final int currentSeason) {
         if (currentSeason <= 0) {
             return;
         }
@@ -45,7 +45,7 @@ public class Serial extends Video {
 
     @Override
     public void calculateFinalRating() {
-        Double sum = 0.0;
+        double sum = 0.0;
 
         for (Season season : seasons) {
             List<Double> ratings = season.getRatings();
@@ -69,7 +69,7 @@ public class Serial extends Video {
     }
 
     private Integer calculateDuration() {
-        Integer totalDuration = 0;
+        int totalDuration = 0;
 
         for (Season season : seasons) {
             totalDuration += season.getDuration();

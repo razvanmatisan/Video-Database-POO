@@ -17,10 +17,10 @@ import java.util.Map;
 
 
 public class Conversion {
-    private List<User> users = new ArrayList<User>();
-    private List<Actor> actors = new ArrayList<Actor>();
-    private List<Movie> movies = new ArrayList<Movie>();
-    private List<Serial> series = new ArrayList<Serial>();
+    private List<User> users = new ArrayList<>();
+    private List<Actor> actors = new ArrayList<>();
+    private List<Movie> movies = new ArrayList<>();
+    private List<Serial> series = new ArrayList<>();
 
     public List<User> convertUser(List<UserInputData> users) {
         this.users.clear();

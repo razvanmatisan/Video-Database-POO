@@ -1,11 +1,15 @@
 package main;
 
+import action.Action;
+import action.ActionFactory;
 import actor.Actor;
 import actor.ActorDB;
 import checker.Checker;
 import checker.Checkstyle;
 import common.Constants;
-import entertainment.*;
+import entertainment.Movie;
+import entertainment.Serial;
+import entertainment.VideoDB;
 import fileio.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,12 +22,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * The entry point to this homework. It runs the checker that tests your implentation.
+ * The entry point to this homework. It runs the checker that tests your implementation.
  */
 public final class Main {
     /**
@@ -91,213 +94,17 @@ public final class Main {
         List<Serial> mySeries = conversion.convertSerial(series);
 
         UserDB userDB = new UserDB(myUsers);
-        HashMap<String, User> dbUser = userDB.getUserHashMap();
-
         ActorDB actorDB = new ActorDB(myActors);
-        HashMap<String, Actor> dbActor = actorDB.getActorHashMap();
-
         VideoDB videoDB = new VideoDB(myMovies, mySeries);
+
         videoDB.setIndexDatabase();
-        HashMap<String, Video> dbMovie = videoDB.getMovieHashMap();
-        HashMap<String, Video> dbSerial = videoDB.getSerialHashMap();
+
+        ActionFactory actionFactory = new ActionFactory(videoDB, actorDB, userDB);
 
         for (ActionInputData command : commands) {
-            String username = command.getUsername();
-            String type = command.getType();
-            switch(command.getActionType()) {
-                case "command":
-                    String title = command.getTitle();
-                    switch (command.getType()) {
-                        case "favorite":
-                            if (dbUser.containsKey(username)) {
-                                String message = dbUser.get(username).favorite(title);
-                                JSONObject out;
-                                if (message.equals("Added to Favorites!")) {
-                                    out = fileWriter.writeFile(command.getActionId(), "",
-                                            "success -> " + command.getTitle() + " was added as favourite");
-                                } else if (message.equals("Already in Favorites!")) {
-                                    out = fileWriter.writeFile(command.getActionId(), "",
-                                            "error -> " + command.getTitle() + " is already in favourite list");
-                                } else {
-                                    out = fileWriter.writeFile(command.getActionId(), "",
-                                            "error -> " + command.getTitle() + " is not seen");
-                                }
-                                arrayResult.add(out);
-                            }
-                            break;
-                        case "view":
-                            if (dbUser.containsKey(username)) {
-                                User user = dbUser.get(username);
-                                user.view(title);
-                                JSONObject out = fileWriter.writeFile(command.getActionId(), "",
-                                        "success -> " + command.getTitle() +
-                                                " was viewed with total views of " + user.getHistory().get(title));
-                                arrayResult.add(out);
-                            }
-                            break;
-                        case "rating":
-                            if (dbUser.containsKey(username)) {
-                                User user = dbUser.get(username);
-                                Video video;
-
-                                if (command.getSeasonNumber() == 0) {
-                                    video = dbMovie.get(title);
-                                } else {
-                                    video = dbSerial.get(title);
-                                }
-
-                                JSONObject out;
-                                String message = user.ratingVideo(video, command.getGrade(), command.getSeasonNumber());
-
-                                if (message.equals("Added rating!")) {
-                                    out = fileWriter.writeFile(command.getActionId(), "",
-                                            "success -> " + command.getTitle() +
-                                                    " was rated with " + command.getGrade() + " by " +
-                                                    user.getUsername());
-
-                                } else if (message.equals("Already rated!")) {
-                                    out = fileWriter.writeFile(command.getActionId(), "",
-                                            "error -> " + command.getTitle() +
-                                                    " has been already rated");
-
-                                } else {
-                                    out = fileWriter.writeFile(command.getActionId(), "",
-                                            "error -> " + command.getTitle() +
-                                                    " is not seen");
-                                }
-
-                                arrayResult.add(out);
-                            }
-                            break;
-                    }
-                    break;
-                case "query":
-                    String criteria = command.getCriteria();
-                    String sortType = command.getSortType();
-                    List<List<String>> filters = command.getFilters();
-                    String objectType = command.getObjectType();
-                    int number = command.getNumber();
-
-                    JSONObject out;
-
-                    switch (criteria) {
-                        case "average" -> {
-                            List<String> sortedActorsByRating = actorDB.average(sortType, number, videoDB);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "Query result: " + sortedActorsByRating);
-                            arrayResult.add(out);
-                        }
-                        case "awards" -> {
-                            List<String> sortedActorsByAwards = actorDB.awards(sortType, filters);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "Query result: " + sortedActorsByAwards);
-                            arrayResult.add(out);
-                        }
-                        case "filter_description" -> {
-                            List<String> sortedActorsByDescription = actorDB.filterDescription(sortType, filters);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "Query result: " + sortedActorsByDescription);
-                            arrayResult.add(out);
-                        }
-                        case "ratings" -> {
-                            List<String> sortedVideosByRating = videoDB.rating(sortType, number, filters, objectType);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "Query result: " + sortedVideosByRating);
-                            arrayResult.add(out);
-                        }
-                        case "favorite" -> {
-                            List<String> sortedVideosByFavorite = videoDB.favorite(sortType, number,
-                                    filters, userDB, objectType);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "Query result: " + sortedVideosByFavorite);
-                            arrayResult.add(out);
-                        }
-                        case "longest" -> {
-                            List<String> sortedVideosByLongest = videoDB.longest(sortType, number, filters, objectType);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "Query result: " + sortedVideosByLongest);
-                            arrayResult.add(out);
-                        }
-                        case "most_viewed" -> {
-                            List<String> sortedVideosByMostViewed = videoDB.mostViewed(sortType, number, filters,
-                                    objectType, userDB);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "Query result: " + sortedVideosByMostViewed);
-                            arrayResult.add(out);
-                        }
-                        case "num_ratings" -> {
-                            List<String> sortedUsers = userDB.numberOfRatings(sortType, number);
-                            out = fileWriter.writeFile(command.getActionId(), "",
-                                    "Query result: " + sortedUsers);
-                            arrayResult.add(out);
-                        }
-                    }
-                    break;
-                case "recommendation":
-                    User user = dbUser.get(username);
-                    switch(type) {
-                        case "standard":
-                            String standardRecommendation = user.standard(videoDB);
-                            if (!standardRecommendation.equals("")) {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "StandardRecommendation result: " + standardRecommendation);
-                            } else {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "StandardRecommendation cannot be applied!");
-                            }
-
-                            arrayResult.add(out);
-                            break;
-
-                        case "best_unseen":
-                            String bestRatedUnseenRecommendation = user.bestUnseen(videoDB);
-                            if (!bestRatedUnseenRecommendation.equals("")) {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "BestRatedUnseenRecommendation result: " + bestRatedUnseenRecommendation);
-                            } else {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "BestRatedUnseenRecommendation cannot be applied!");
-                            }
-
-                            arrayResult.add(out);
-                            break;
-                        case "popular":
-                            String popularRecommendation = user.popular(videoDB, userDB);
-                            if (!popularRecommendation.equals("")) {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "PopularRecommendation result: " + popularRecommendation);
-                            } else {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "PopularRecommendation cannot be applied!");
-                            }
-                            arrayResult.add(out);
-                            break;
-                        case "favorite":
-                            String favoriteRecommendation = user.favoriteRecommendation(videoDB, userDB);
-                            if (!favoriteRecommendation.equals("")) {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "FavoriteRecommendation result: " + favoriteRecommendation);
-                            } else {
-                                    out = fileWriter.writeFile(command.getActionId(), "",
-                                            "FavoriteRecommendation cannot be applied!");
-                            }
-                            arrayResult.add(out);
-                            break;
-                        case "search":
-                            String genre = command.getGenre();
-                            List<String> searchRecommendation = user.search(genre, userDB, videoDB);
-                            if (!searchRecommendation.isEmpty()) {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "SearchRecommendation result: " + searchRecommendation);
-                            } else {
-                                out = fileWriter.writeFile(command.getActionId(), "",
-                                        "SearchRecommendation cannot be applied!");
-                            }
-                            arrayResult.add(out);
-                            break;
-                    }
-                    break;
-            }
+            Action action = actionFactory.getAction(command);
+            JSONObject out = action.callAction(fileWriter);
+            arrayResult.add(out);
         }
 
         fileWriter.closeJSON(arrayResult);

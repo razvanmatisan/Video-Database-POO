@@ -4,6 +4,7 @@ import entertainment.Video;
 import entertainment.VideoDB;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class User {
     private final String username;
@@ -11,7 +12,7 @@ public class User {
     private final Map<String, Integer> history;
     private final ArrayList<String> favoriteVideos;
 
-    private Map<String, ArrayList<Integer>> videosWithRating;
+    private final Map<String, ArrayList<Integer>> videosWithRating;
     private Integer numberGivenRatings;
 
     public User(final String username, final String subscriptionType,
@@ -33,10 +34,6 @@ public class User {
         return history;
     }
 
-    public String getSubscriptionType() {
-        return subscriptionType;
-    }
-
     public ArrayList<String> getFavoriteVideos() {
         return favoriteVideos;
     }
@@ -46,7 +43,7 @@ public class User {
     }
 
     /* ////////////////////// Commands ////////////////////// */
-    public String favorite(String title) {
+    public String favorite(final String title) {
         if (favoriteVideos.contains(title)) {
             return "Already in Favorites!";
         } else if (history.containsKey(title)) {
@@ -56,7 +53,7 @@ public class User {
         return "Haven't been seen yet!";
     }
 
-    public void view(String title) {
+    public void view(final String title) {
         if (history.containsKey(title)) {
             history.put(title, history.get(title) + 1);
         } else {
@@ -64,7 +61,7 @@ public class User {
         }
     }
 
-    public String ratingVideo(Video video, final double rating, int numberSeason) {
+    public String ratingVideo(final Video video, final double rating, final int numberSeason) {
         String title = video.getTitle();
         if (videosWithRating.containsKey(title)) {
             ArrayList<Integer> seasons = videosWithRating.get(title);
@@ -93,7 +90,7 @@ public class User {
 
     /* ////////////////////// Recommendations ////////////////////// */
 
-    private String firstUnseenVideo(List<Video> videos) {
+    private String firstUnseenVideo(final List<Video> videos) {
         for (Video video : videos) {
             String title = video.getTitle();
             if (!history.containsKey(title)) {
@@ -104,7 +101,7 @@ public class User {
     }
 
     /* /////////// 1. Standard /////////// */
-    public String standard(VideoDB videoDB) {
+    public String standard(final VideoDB videoDB) {
         List<Video> movies = videoDB.getMovies();
         List<Video> serials = videoDB.getSerials();
 
@@ -117,14 +114,14 @@ public class User {
     }
 
     /* /////////// 2. Best Unseen /////////// */
-    public void updateRatingVideos(List<Video> copyVideos, List<Video> videos) {
+    private void updateRatingVideos(final List<Video> copyVideos, final List<Video> videos) {
         for (Video video : videos) {
             video.calculateFinalRating();
             copyVideos.add(video);
         }
     }
 
-    public String bestUnseen(VideoDB videoDB) {
+    public String bestUnseen(final VideoDB videoDB) {
         List<Video> videos = new ArrayList<>();
 
         List<Video> movies = videoDB.getMovies();
@@ -140,18 +137,11 @@ public class User {
             return v2.getRatingVideo().compareTo(v1.getRatingVideo());
         });
 
-        for (Video video : videos) {
-            String title = video.getTitle();
-            if (!history.containsKey(title)) {
-                return title;
-            }
-        }
-
-        return "";
+        return firstUnseenVideo(videos);
     }
 
     /* /////////// 3. Popular /////////// */
-    public String popular(VideoDB videoDB, UserDB userDB) {
+    public String popular(final VideoDB videoDB, final UserDB userDB) {
         if (subscriptionType.equals("PREMIUM")) {
             videoDB.setNumberViewsAllVideos(userDB);
             videoDB.setPopularGenresAllVideos();
@@ -165,8 +155,6 @@ public class User {
 
             while (!popularGenres.isEmpty()) {
                 String genre = Collections.max(popularGenres.entrySet(), Map.Entry.comparingByValue()).getKey();
-//                System.out.println(genre);
-                //System.out.println(Collections.max(popularGenres.entrySet(), Map.Entry.comparingByValue()));
 
                 for (Video movie : movies) {
                     if (movie.getGenres().contains(genre) && !history.containsKey(movie.getTitle())) {
@@ -193,8 +181,6 @@ public class User {
                 }
             }
 
-            //System.out.println("-----------");
-
             videoDB.setPopularGenresAllVideos();
             return title;
         }
@@ -204,7 +190,7 @@ public class User {
 
 
     /* /////////// 4. Favorite /////////// */
-    public void filterFavoriteVideos(List<Video> copyVideos, List<Video> videos) {
+    private void filterFavoriteVideos(final List<Video> copyVideos, final List<Video> videos) {
         for (Video video : videos) {
             Integer numberFavorites = video.getNumberOfFavorites();
             if (numberFavorites != 0) {
@@ -213,9 +199,7 @@ public class User {
         }
     }
 
-    public String favoriteRecommendation(VideoDB videoDB, UserDB userDB) {
-        String title = "";
-
+    public String favoriteRecommendation(final VideoDB videoDB, final UserDB userDB) {
         if (subscriptionType.equals("PREMIUM")) {
             List<Video> videos = new ArrayList<>();
 
@@ -252,9 +236,9 @@ public class User {
 
             videos.removeIf(video -> history.containsKey(video.getTitle()));
 
-            for (int i = 0; i < videos.size(); i++) {
-                titles.add(videos.get(i).getTitle());
-            }
+            titles = videos.stream()
+                .map(Video::getTitle)
+                .collect(Collectors.toList());
 
             return titles;
         }

@@ -10,8 +10,8 @@ public abstract class Video {
 
     protected Integer indexInDatabase;
     protected Integer numberViews;
-    protected Double ratingVideo;
     protected Integer numberOfFavorites;
+    protected Double ratingVideo;
 
     public Video(final String title, final int year,
                  final ArrayList<String> cast, final ArrayList<String> genres) {

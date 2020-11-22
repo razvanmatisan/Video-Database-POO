@@ -9,9 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ActorDB {
-    private HashMap<String, Actor> actorHashMap = new HashMap<>();
+    private final HashMap<String, Actor> actorHashMap = new HashMap<>();
 
-    public ActorDB(List<Actor> actors) {
+    public ActorDB(final List<Actor> actors) {
         for (Actor actor : actors) this.actorHashMap.put(actor.getName(), actor);
     }
 
@@ -21,7 +21,7 @@ public class ActorDB {
 
     /* ////////////////////// Queries for Actor ////////////////////// */
 
-    private void sortActorsByRating(String sortType, List<Actor> actors) {
+    private void sortActorsByRating(final String sortType, final List<Actor> actors) {
         switch (sortType) {
             case "asc" -> actors.sort((a1, a2) -> {
                 if (a1.getRating().equals(a2.getRating())) {
@@ -29,7 +29,7 @@ public class ActorDB {
                 }
                 return a1.getRating().compareTo(a2.getRating());
             });
-            case "desc" -> Collections.sort(actors, (a1, a2) -> {
+            case "desc" -> actors.sort((a1, a2) -> {
                 if (a2.getRating().equals(a1.getRating())) {
                     return a2.getName().compareTo(a1.getName());
                 }
@@ -38,7 +38,7 @@ public class ActorDB {
         }
     }
 
-    public List<String> average(String sortType, int number, VideoDB videoDB) {
+    public List<String> average(final String sortType, final int number, final VideoDB videoDB) {
         List<Actor> actors = new ArrayList<>();
 
         List<Video> movies = videoDB.getMovies();
@@ -63,7 +63,7 @@ public class ActorDB {
         return copyActors;
     }
 
-    public void sortActorsByAwards(String sortType, List<Actor> actors) {
+    private void sortActorsByAwards(final String sortType, final List<Actor> actors) {
         switch (sortType) {
             case "asc" -> actors.sort((a1, a2) -> {
                 if (a1.getNumberAwards().equals(a2.getNumberAwards())) {
@@ -71,7 +71,7 @@ public class ActorDB {
                 }
                 return a1.getNumberAwards().compareTo(a2.getNumberAwards());
             });
-            case "desc" -> Collections.sort(actors, (a1, a2) -> {
+            case "desc" -> actors.sort((a1, a2) -> {
                 if (a2.getNumberAwards().equals(a1.getNumberAwards())) {
                     return a2.getName().compareTo(a1.getName());
                 }
@@ -80,7 +80,7 @@ public class ActorDB {
         }
     }
 
-    public List<String> awards(String sortType, List<List<String>> filters) {
+    public List<String> awards(final String sortType, final List<List<String>> filters) {
         List<ActorsAwards> filterActorAwards = new ArrayList<>();
         List<Actor> actors = new ArrayList<>();
 
@@ -102,7 +102,6 @@ public class ActorDB {
         sortActorsByAwards(sortType, actors);
 
         List<String> copyActors = new ArrayList<>();
-
         for (Actor actor : actors) {
             copyActors.add(actor.getName());
         }
@@ -110,8 +109,7 @@ public class ActorDB {
         return copyActors;
     }
 
-    public List<String> filterDescription(String sortType, List<List<String>> filters) {
-        List<ActorsAwards> filterActorAwards = new ArrayList<>();
+    public List<String> filterDescription(final String sortType, final List<List<String>> filters) {
         List<Actor> actors = new ArrayList<>();
 
         List<String> words = filters.get(2);
