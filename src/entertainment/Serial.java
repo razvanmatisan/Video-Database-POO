@@ -3,7 +3,7 @@ package entertainment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Serial extends Video {
+public final class Serial extends Video {
     private final int numberOfSeasons;
     private final ArrayList<Season> seasons;
     private final Integer duration;
@@ -49,16 +49,13 @@ public class Serial extends Video {
 
         for (Season season : seasons) {
             List<Double> ratings = season.getRatings();
-            if (ratings.size() == 0) {
-                continue;
+            if (ratings.size() != 0) {
+                double sumSeason = 0.0;
+                for (double rating : ratings) {
+                    sumSeason += rating;
+                }
+                sum += (sumSeason / ratings.size());
             }
-
-            Double sumSeason = 0.0;
-            for (Double rating : ratings) {
-                sumSeason += rating;
-            }
-
-            sum += (sumSeason / ratings.size());
         }
 
         if (sum == 0.0) {

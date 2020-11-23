@@ -1,14 +1,21 @@
 package user;
 
 import entertainment.Video;
+import sorts.SortUserByRating;
+import sorts.StrategyUser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class UserDB {
+public final class UserDB {
     private final HashMap<String, User> userHashMap = new HashMap<>();
 
-    public UserDB(List<User> users) {
-        for (User user : users) this.userHashMap.put(user.getUsername(), user);
+    public UserDB(final List<User> users) {
+        for (User user : users) {
+            this.userHashMap.put(user.getUsername(), user);
+        }
     }
 
     public HashMap<String, User> getUserHashMap() {
@@ -36,33 +43,15 @@ public class UserDB {
             List<String> favoriteVideos = user.getFavoriteVideos();
             for (String favorite : favoriteVideos) {
                 if (video.getTitle().equals(favorite)) {
-                    numberOfFavorites += 1;
+                    numberOfFavorites++;
                 }
             }
         }
-        video.setNumberOfFavorites(numberOfFavorites);
 
+        video.setNumberOfFavorites(numberOfFavorites);
     }
 
     /* ////////////////////// Query User ////////////////////// */
-
-    public void sortUsersByRatings(final String sortType, final List<User> users) {
-        switch (sortType) {
-            case "asc" -> users.sort((u1, u2) -> {
-                if (u1.getNumberGivenRatings().equals(u2.getNumberGivenRatings())) {
-                    return u1.getUsername().compareTo(u2.getUsername());
-                }
-                return u1.getNumberGivenRatings().compareTo(u2.getNumberGivenRatings());
-            });
-            case "desc" -> users.sort((u1, u2) -> {
-                if (u2.getNumberGivenRatings().equals(u1.getNumberGivenRatings())) {
-                    return u2.getUsername().compareTo(u1.getUsername());
-                }
-                return u2.getNumberGivenRatings().compareTo(u1.getNumberGivenRatings());
-            });
-        }
-    }
-
     public List<String> numberOfRatings(final String sortType, final int number) {
         List<User> users = new ArrayList<>();
 
@@ -72,7 +61,8 @@ public class UserDB {
             }
         }
 
-        sortUsersByRatings(sortType, users);
+        StrategyUser strategy = new StrategyUser(new SortUserByRating());
+        strategy.sort(sortType, users);
 
         List<String> copyUsers = new ArrayList<>();
         for (int i = 0; i < Math.min(users.size(), number); i++) {

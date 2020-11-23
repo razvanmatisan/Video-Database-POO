@@ -16,16 +16,16 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Conversion {
-    private List<User> users = new ArrayList<>();
-    private List<Actor> actors = new ArrayList<>();
-    private List<Movie> movies = new ArrayList<>();
-    private List<Serial> series = new ArrayList<>();
+public final class Conversion {
+    private final List<User> users = new ArrayList<>();
+    private final List<Actor> actors = new ArrayList<>();
+    private final List<Movie> movies = new ArrayList<>();
+    private final List<Serial> serials = new ArrayList<>();
 
-    public List<User> convertUser(List<UserInputData> users) {
+    public List<User> convertUser(final List<UserInputData> users1) {
         this.users.clear();
 
-        for (UserInputData user : users) {
+        for (UserInputData user : users1) {
             String username = user.getUsername();
             String subscriptionType = user.getSubscriptionType();
             Map<String, Integer> history = user.getHistory();
@@ -37,10 +37,10 @@ public class Conversion {
         return this.users;
     }
 
-    public List<Actor> convertActor(List<ActorInputData> actors) {
+    public List<Actor> convertActor(final List<ActorInputData> actors1) {
         this.actors.clear();
 
-        for (ActorInputData actor : actors) {
+        for (ActorInputData actor : actors1) {
             String name = actor.getName();
             String careerDescription = actor.getCareerDescription();
             ArrayList<String> filmography = actor.getFilmography();
@@ -52,10 +52,10 @@ public class Conversion {
         return this.actors;
     }
 
-    public List<Movie> convertMovie(List<MovieInputData> movies) {
+    public List<Movie> convertMovie(final List<MovieInputData> movies1) {
         this.movies.clear();
 
-        for (MovieInputData movie : movies) {
+        for (MovieInputData movie : movies1) {
             String title = movie.getTitle();
             int year = movie.getYear();
             ArrayList<String> cast = movie.getCast();
@@ -68,10 +68,10 @@ public class Conversion {
         return this.movies;
     }
 
-    public List<Serial> convertSerial(List<SerialInputData> series) {
-        this.series.clear();
+    public List<Serial> convertSerial(final List<SerialInputData> serials1) {
+        this.serials.clear();
 
-        for (SerialInputData serial : series) {
+        for (SerialInputData serial : serials1) {
             String title = serial.getTitle();
             int year = serial.getYear();
             ArrayList<String> cast = serial.getCast();
@@ -79,42 +79,25 @@ public class Conversion {
             int numberOfSeasons = serial.getNumberSeason();
             ArrayList<Season> seasons = serial.getSeasons();
 
-            this.series.add(new Serial(title, cast, genres, numberOfSeasons, seasons, year));
+            this.serials.add(new Serial(title, cast, genres, numberOfSeasons, seasons, year));
         }
 
-        return this.series;
+        return this.serials;
     }
 
     public List<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-
     public List<Actor> getActors() {
         return actors;
-    }
-
-    public void setActors(List<Actor> actors) {
-        this.actors = actors;
     }
 
     public List<Movie> getMovies() {
         return movies;
     }
 
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
-    }
-
     public List<Serial> getSeries() {
-        return series;
+        return serials;
     }
-
-    public void setSeries(List<Serial> series) {
-        this.series = series;
-    }
-
 }

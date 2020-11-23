@@ -45,7 +45,7 @@ public abstract class Video {
         return numberOfFavorites;
     }
 
-    public void setNumberOfFavorites(Integer numberOfFavorites) {
+    public void setNumberOfFavorites(final Integer numberOfFavorites) {
         this.numberOfFavorites = numberOfFavorites;
     }
 
@@ -57,7 +57,7 @@ public abstract class Video {
         return numberViews;
     }
 
-    public void setNumberViews(Integer numberViews) {
+    public void setNumberViews(final Integer numberViews) {
         this.numberViews = numberViews;
     }
 
@@ -65,13 +65,13 @@ public abstract class Video {
         return indexInDatabase;
     }
 
-    public void setIndexInDatabase(Integer indexDatabase) {
+    public void setIndexInDatabase(final Integer indexDatabase) {
         this.indexInDatabase = indexDatabase;
     }
 
-    abstract public void giveRating(final double rating, int numberSeason);
+    public abstract void giveRating(double rating, int numberSeason);
 
-    abstract public Integer getDuration();
+    public abstract Integer getDuration();
 
-    abstract public void calculateFinalRating();
+    public abstract void calculateFinalRating();
 }

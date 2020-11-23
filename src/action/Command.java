@@ -1,6 +1,5 @@
 package action;
 
-import actor.ActorDB;
 import entertainment.Video;
 import entertainment.VideoDB;
 import fileio.Writer;
@@ -11,9 +10,9 @@ import user.UserDB;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class Command implements Action {
+public final class Command implements Action {
     private final VideoDB videoDB;
-    private final ActorDB actorDB;
+//    private final ActorDB actorDB;
     private final UserDB userDB;
 
     private final String type;
@@ -23,10 +22,12 @@ public class Command implements Action {
     private final double grade;
     private final int seasonNumber;
 
-    public Command(int actionId, String type, String title, String username, double grade, int seasonNumber, VideoDB videoDB, ActorDB actorDB, UserDB userDB) {
+    public Command(final int actionId, final String type, final String title,
+                   final String username, final double grade, final int seasonNumber,
+                   final VideoDB videoDB, final UserDB userDB) {
         this.type = type;
         this.videoDB = videoDB;
-        this.actorDB = actorDB;
+        //this.actorDB = actorDB;
         this.userDB = userDB;
         this.title = title;
         this.actionId = actionId;
@@ -36,66 +37,60 @@ public class Command implements Action {
     }
 
     @Override
-    public JSONObject callAction(Writer fileWriter) throws IOException {
+    public JSONObject callAction(final Writer fileWriter) throws IOException {
         HashMap<String, User> userHashMap = userDB.getUserHashMap();
+        String message;
         switch (type) {
             case "favorite":
-                if (userHashMap.containsKey(username)) {
-                    String message = userHashMap.get(username).favorite(title);
+                message = userHashMap.get(username).favorite(title);
 
-                    if (message.equals("Added to Favorites!")) {
-                        return fileWriter.writeFile(actionId, "",
-                                    "success -> " + title + " was added as favourite");
-                    } else if (message.equals("Already in Favorites!")) {
-                        return fileWriter.writeFile(actionId, "",
-                                "error -> " + title + " is already in favourite list");
-                    } else {
-                        return fileWriter.writeFile(actionId, "",
-                                "error -> " + title + " is not seen");
-                    }
-                }
-                break;
-            case "view":
-                if (userHashMap.containsKey(username)) {
-                    User user = userHashMap.get(username);
-                    user.view(title);
+                if (message.equals("Added to Favorites!")) {
                     return fileWriter.writeFile(actionId, "",
-                            "success -> " + title +
-                                    " was viewed with total views of " + user.getHistory().get(title));
+                                "success -> " + title + " was added as favourite");
+                } else if (message.equals("Already in Favorites!")) {
+                    return fileWriter.writeFile(actionId, "",
+                            "error -> " + title + " is already in favourite list");
+                } else {
+                    return fileWriter.writeFile(actionId, "",
+                            "error -> " + title + " is not seen");
                 }
-                break;
+            case "view":
+                User user = userHashMap.get(username);
+                user.view(title);
+                return fileWriter.writeFile(actionId, "", "success -> " + title
+                                + " was viewed with total views of "
+                                + user.getHistory().get(title));
             case "rating":
-                if (userHashMap.containsKey(username)) {
-                    User user = userHashMap.get(username);
-                    Video video;
+                user = userHashMap.get(username);
+                Video video;
 
-                    if (seasonNumber == 0) {
-                        video = videoDB.getMovieHashMap().get(title);
-                    } else {
-                        video = videoDB.getSerialHashMap().get(title);
-                    }
-
-                    String message = user.ratingVideo(video, grade, seasonNumber);
-
-                    if (message.equals("Added rating!")) {
-                        return fileWriter.writeFile(actionId, "",
-                                "success -> " + title +
-                                        " was rated with " + grade + " by " +
-                                        user.getUsername());
-
-                    } else if (message.equals("Already rated!")) {
-                        return fileWriter.writeFile(actionId, "",
-                                "error -> " + title +
-                                        " has been already rated");
-
-                    } else {
-                        return fileWriter.writeFile(actionId, "",
-                                "error -> " + title +
-                                        " is not seen");
-                    }
+                if (seasonNumber == 0) {
+                    video = videoDB.findMovie(title);
+                } else {
+                    video = videoDB.findSerial(title);
                 }
-        }
 
-        return null;
+                assert video != null;
+                message = user.ratingVideo(video, grade, seasonNumber);
+
+                if (message.equals("Added rating!")) {
+                    return fileWriter.writeFile(actionId, "",
+                            "success -> " + title
+                                    + " was rated with " + grade + " by "
+                                    + user.getUsername());
+
+                } else if (message.equals("Already rated!")) {
+                    return fileWriter.writeFile(actionId, "",
+                            "error -> " + title
+                                    + " has been already rated");
+
+                } else {
+                    return fileWriter.writeFile(actionId, "",
+                            "error -> " + title
+                                    + " is not seen");
+                }
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
     }
 }

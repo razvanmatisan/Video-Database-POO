@@ -3,7 +3,7 @@ package entertainment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Movie extends Video {
+public final class Movie extends Video {
     private final Integer duration;
     private final List<Double> ratings = new ArrayList<>();
 

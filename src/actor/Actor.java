@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Actor {
+public final class Actor {
     private String name;
     private String careerDescription;
     private ArrayList<String> filmography;
@@ -64,47 +64,49 @@ public class Actor {
 
     void setNumberAwardsOneActor() {
         Integer finalNumberAwards = 0;
+
         for (Integer number : awards.values()) {
             finalNumberAwards += number;
         }
+
         numberAwards = finalNumberAwards;
     }
 
+    private Video findVideo(final String title,
+                            final List<Video> movies, final List<Video> serials) {
+        for (Video movie : movies) {
+            if (movie.getTitle().equals(title)) {
+                return movie;
+            }
+        }
+
+        for (Video serial : serials) {
+            if (serial.getTitle().equals(title)) {
+                return serial;
+            }
+        }
+
+        return null;
+    }
+
     public void calculateRating(final List<Video> movies, final List<Video> serials) {
-        Video video = null;
+        Video video;
 
         double averageRating = 0.0;
         int numberVideos = 0;
 
         for (String title : filmography) {
-            for (Video movie : movies) {
-                if (movie.getTitle().equals(title)) {
-                    video = movie;
-                    break;
+            video = findVideo(title, movies, serials);
+
+            if (video != null) {
+                video.calculateFinalRating();
+                double grade = video.getRatingVideo();
+
+                if (grade != 0) {
+                    numberVideos += 1;
+                    averageRating += grade;
                 }
             }
-
-            if (video == null) {
-                for (Video serial : serials) {
-                    if (serial.getTitle().equals(title)) {
-                        video = serial;
-                        break;
-                    }
-                }
-            }
-
-            if (video == null) {
-                continue;
-            }
-
-            video.calculateFinalRating();
-            Double rating = video.getRatingVideo();
-
-            if (rating != 0) {
-                numberVideos += 1;
-                averageRating += rating;
-            }
-
         }
 
         if (numberVideos == 0) {

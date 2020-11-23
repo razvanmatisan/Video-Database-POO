@@ -7,18 +7,18 @@ import user.UserDB;
 
 import java.util.List;
 
-public class ActionFactory {
+public final class ActionFactory {
     private final VideoDB videoDB;
     private final ActorDB actorDB;
     private final UserDB userDB;
 
-    public ActionFactory(VideoDB videoDB, ActorDB actorDB, UserDB userDB) {
+    public ActionFactory(final VideoDB videoDB, final ActorDB actorDB, final UserDB userDB) {
         this.videoDB = videoDB;
         this.actorDB = actorDB;
         this.userDB = userDB;
     }
 
-    public Action getAction(ActionInputData action) {
+    public Action getAction(final ActionInputData action) {
         String actionType = action.getActionType();
         String type = action.getType();
         String title = action.getTitle();
@@ -35,18 +35,20 @@ public class ActionFactory {
         int seasonNumber = action.getSeasonNumber();
 
 
-        switch(actionType) {
+        switch (actionType) {
             case ("command") -> {
-                return new Command(actionId, type, title, username, grade, seasonNumber, videoDB, actorDB, userDB);
+                return new Command(actionId, type, title, username, grade, seasonNumber,
+                        videoDB, userDB);
             }
             case("query") -> {
-                return new Query(actionId, criteria, objectType, sortType, filters, number, videoDB, actorDB, userDB);
+                return new Query(actionId, criteria, objectType, sortType, filters, number,
+                        videoDB, actorDB, userDB);
             }
             case("recommendation") -> {
-                return new Recommendation(actionId, type, username, genre, videoDB, actorDB, userDB);
+                return new Recommendation(actionId, type, username, genre,
+                        videoDB, actorDB, userDB);
             }
+            default -> throw new IllegalStateException("Unexpected value: " + actionType);
         }
-
-        return null;
     }
 }

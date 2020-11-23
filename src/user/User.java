@@ -2,11 +2,19 @@ package user;
 
 import entertainment.Video;
 import entertainment.VideoDB;
+import sorts.SortRecommendationBestUnseen;
+import sorts.SortRecommendationFavorite;
+import sorts.SortRecommendationSearch;
+import sorts.StrategyRecommendation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-public class User {
+public final class User {
     private final String username;
     private final String subscriptionType;
     private final Map<String, Integer> history;
@@ -70,7 +78,7 @@ public class User {
             } else {
                 video.giveRating(rating, numberSeason);
                 seasons.add(numberSeason);
-                numberGivenRatings += 1;
+                numberGivenRatings++;
                 return "Added rating!";
             }
         } else if (history.containsKey(title)) {
@@ -80,7 +88,7 @@ public class User {
             seasons.add(numberSeason);
             videosWithRating.put(title, seasons);
 
-            numberGivenRatings += 1;
+            numberGivenRatings++;
 
             return "Added rating!";
         }
@@ -130,17 +138,47 @@ public class User {
         updateRatingVideos(videos, movies);
         updateRatingVideos(videos, serials);
 
-        videos.sort((v1, v2) -> {
-            if (v2.getRatingVideo().equals(v1.getRatingVideo())) {
-                return v1.getIndexInDatabase().compareTo(v2.getIndexInDatabase());
-            }
-            return v2.getRatingVideo().compareTo(v1.getRatingVideo());
-        });
+        StrategyRecommendation strategy
+                = new StrategyRecommendation(new SortRecommendationBestUnseen());
+        strategy.sort(videos);
 
         return firstUnseenVideo(videos);
     }
 
     /* /////////// 3. Popular /////////// */
+    private String findVideoByPopularGenre(final List<Video> movies, final List<Video> serials,
+                                           final HashMap<String, Integer> popularGenres) {
+        while (!popularGenres.isEmpty()) {
+            String title;
+            String genre = Collections.max(popularGenres.entrySet(),
+                    Map.Entry.comparingByValue()).getKey();
+
+            title = findVideoByGenre(genre, movies);
+
+            if (title.equals("")) {
+                title = findVideoByGenre(genre, serials);
+            }
+
+            if (!title.equals("")) {
+                return title;
+            }
+            popularGenres.remove(genre);
+        }
+
+        return "";
+    }
+
+    private String findVideoByGenre(final String genre, final List<Video> videos) {
+        String title;
+        for (Video video : videos) {
+            if (video.getGenres().contains(genre) && !history.containsKey(video.getTitle())) {
+                title = video.getTitle();
+                return title;
+            }
+        }
+        return "";
+    }
+
     public String popular(final VideoDB videoDB, final UserDB userDB) {
         if (subscriptionType.equals("PREMIUM")) {
             videoDB.setNumberViewsAllVideos(userDB);
@@ -151,38 +189,7 @@ public class User {
             List<Video> movies = videoDB.getMovies();
             List<Video> serials = videoDB.getSerials();
 
-            String title = "";
-
-            while (!popularGenres.isEmpty()) {
-                String genre = Collections.max(popularGenres.entrySet(), Map.Entry.comparingByValue()).getKey();
-
-                for (Video movie : movies) {
-                    if (movie.getGenres().contains(genre) && !history.containsKey(movie.getTitle())) {
-                        title = movie.getTitle();
-                        break;
-                    }
-                }
-
-                if (title.equals("")) {
-                    for (Video serial : serials) {
-                        if (serial.getGenres().contains(genre) && !history.containsKey(serial.getTitle())) {
-                            title = serial.getTitle();
-                            break;
-                        }
-                    }
-                } else {
-                    break;
-                }
-
-                if (title.equals("")) {
-                    popularGenres.remove(genre);
-                } else {
-                    break;
-                }
-            }
-
-            videoDB.setPopularGenresAllVideos();
-            return title;
+            return findVideoByPopularGenre(movies, serials, popularGenres);
         }
 
         return "";
@@ -211,12 +218,9 @@ public class User {
             filterFavoriteVideos(videos, movies);
             filterFavoriteVideos(videos, serials);
 
-            videos.sort((v1, v2) -> {
-                if (v2.getNumberOfFavorites().equals(v1.getNumberOfFavorites())) {
-                    return v1.getIndexInDatabase().compareTo(v2.getIndexInDatabase());
-                }
-                return v2.getNumberOfFavorites().compareTo(v1.getNumberOfFavorites());
-            });
+            StrategyRecommendation strategy
+                    = new StrategyRecommendation(new SortRecommendationFavorite());
+            strategy.sort(videos);
 
             return firstUnseenVideo(videos);
         }
@@ -224,15 +228,18 @@ public class User {
         return "";
     }
 
-    public List<String> search(String genre, UserDB userDB, VideoDB videoDB) {
-        List <String> titles = new ArrayList<>();
+    public List<String> search(final String genre, final UserDB userDB, final VideoDB videoDB) {
         if (subscriptionType.equals("PREMIUM")) {
+            List<String> titles;
             List<Video> videos = new ArrayList<>();
 
             videoDB.setNumberFavoritesAllVideos(userDB);
 
             videoDB.setVideosByGenre(genre, videos);
-            videoDB.sortVideosByRating("asc", videos);
+
+            StrategyRecommendation strategy
+                    = new StrategyRecommendation(new SortRecommendationSearch());
+            strategy.sort(videos);
 
             videos.removeIf(video -> history.containsKey(video.getTitle()));
 
@@ -243,6 +250,6 @@ public class User {
             return titles;
         }
 
-        return titles;
+        return new ArrayList<>();
     }
 }

@@ -10,7 +10,7 @@ import user.UserDB;
 import java.io.IOException;
 import java.util.List;
 
-public class Recommendation implements Action {
+public final class Recommendation implements Action {
     private final VideoDB videoDB;
     private final ActorDB actorDB;
     private final UserDB userDB;
@@ -20,8 +20,9 @@ public class Recommendation implements Action {
     private final int actionId;
     private final String genre;
 
-    public Recommendation(int actionId, String type, String username, String genre,
-                          VideoDB videoDB, ActorDB actorDB, UserDB userDB) {
+    public Recommendation(final int actionId, final String type,
+                          final String username, final String genre,
+                          final VideoDB videoDB, final ActorDB actorDB, final UserDB userDB) {
         this.type = type;
         this.videoDB = videoDB;
         this.actorDB = actorDB;
@@ -29,10 +30,10 @@ public class Recommendation implements Action {
         this.username = username;
         this.actionId = actionId;
         this.genre = genre;
-
     }
+
     @Override
-    public JSONObject callAction(Writer fileWriter) throws IOException {
+    public JSONObject callAction(final Writer fileWriter) throws IOException {
         User user = userDB.getUserHashMap().get(username);
         switch (type) {
             case "standard" -> {
@@ -49,7 +50,8 @@ public class Recommendation implements Action {
                 String bestRatedUnseenRecommendation = user.bestUnseen(videoDB);
                 if (!bestRatedUnseenRecommendation.equals("")) {
                     return fileWriter.writeFile(actionId, "",
-                            "BestRatedUnseenRecommendation result: " + bestRatedUnseenRecommendation);
+                            "BestRatedUnseenRecommendation result: "
+                                    + bestRatedUnseenRecommendation);
                 } else {
                     return fileWriter.writeFile(actionId, "",
                             "BestRatedUnseenRecommendation cannot be applied!");
@@ -85,8 +87,7 @@ public class Recommendation implements Action {
                             "SearchRecommendation cannot be applied!");
                 }
             }
+            default -> throw new IllegalStateException("Unexpected value: " + type);
         }
-
-        return null;
     }
 }
