@@ -88,7 +88,7 @@ public final class Recommendation implements Action {
                             "SearchRecommendation cannot be applied!");
                 }
             }
-            default -> throw new IllegalStateException("Unexpected value: " + type);
+            default -> throw new IllegalStateException(Constants.UNEXPECTED_VALUE + type);
         }
     }
 }
