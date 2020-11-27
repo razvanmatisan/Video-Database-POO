@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 public final class UserDB {
+    /**
+     * Database that stores all users.
+     */
     private final HashMap<String, User> userHashMap = new HashMap<>();
 
     public UserDB(final List<User> users) {
@@ -22,6 +25,9 @@ public final class UserDB {
         return userHashMap;
     }
 
+    /**
+     * Method that sets the number of views for a given video.
+     */
     public void setNumberViewsVideo(final Video video) {
         Integer numberOfViews = 0;
         String title = video.getTitle();
@@ -36,6 +42,10 @@ public final class UserDB {
         video.setNumberViews(numberOfViews);
     }
 
+    /**
+     * Method that sets the number of appearances in favorite videos
+     * for a given video.
+     */
     public void setNumberFavoritesVideo(final Video video) {
         int numberOfFavorites = 0;
 
@@ -51,7 +61,10 @@ public final class UserDB {
         video.setNumberOfFavorites(numberOfFavorites);
     }
 
-    /* ////////////////////// Query User ////////////////////// */
+    /**
+     * Method that returns the first "number" users that are sorted by
+     * the number of given ratings.
+     */
     public List<String> numberOfRatings(final String sortType, final int number) {
         List<User> users = new ArrayList<>();
 

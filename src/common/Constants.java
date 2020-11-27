@@ -54,6 +54,32 @@ public final class Constants {
     public static final String COMMAND = "command";
     public static final String RECOMMENDATION = "recommendation";
 
+    public static final String SUCCES = "success -> ";
+    public static final String ERROR = "error -> ";
+    public static final String ADDED_RATING = "Added rating!";
+    public static final String ALREADY_RATED = "Already rated!";
+    public static final String ADDED_FAVORITES = "Added to Favorites!";
+    public static final String ALREADY_FAVORITES = "Already in Favorites!";
+
+    public static final String VIEW = "view";
+    public static final String RATING = "rating";
+
+    public static final String AVERAGE = "average";
+    public static final String RATINGS = "ratings";
+    public static final String FAVORITE = "favorite";
+    public static final String LONGEST = "longest";
+    public static final String MOST_VIEWED = "most_viewed";
+    public static final String NUM_RATINGS = "num_ratings";
+
+    public static final String STANDARD = "standard";
+    public static final String BEST_UNSEEN = "best_unseen";
+    public static final String POPULAR = "popular";
+    public static final String SEARCH = "search";
+
+    public static final String QUERY_RESULT = "Query result: ";
+    public static final String UNEXPECTED_VALUE = "Unexpected value: ";
+
+
     // checker constants
     public static final String ID_STRING = "id";
     public static final String LARGE = "large";

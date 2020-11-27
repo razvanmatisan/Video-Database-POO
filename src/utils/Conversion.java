@@ -22,6 +22,10 @@ public final class Conversion {
     private final List<Movie> movies = new ArrayList<>();
     private final List<Serial> serials = new ArrayList<>();
 
+    /**
+     * Method that converts a list of UserInputData elements
+     * into User elements
+     */
     public List<User> convertUser(final List<UserInputData> users1) {
         this.users.clear();
 
@@ -37,6 +41,10 @@ public final class Conversion {
         return this.users;
     }
 
+    /**
+     * Method that converts a list of ActorInputData elements
+     * into Actor elements
+     */
     public List<Actor> convertActor(final List<ActorInputData> actors1) {
         this.actors.clear();
 
@@ -52,6 +60,10 @@ public final class Conversion {
         return this.actors;
     }
 
+    /**
+     * Method that converts a list of MovieInputData elements
+     * into Movie elements
+     */
     public List<Movie> convertMovie(final List<MovieInputData> movies1) {
         this.movies.clear();
 
@@ -68,6 +80,10 @@ public final class Conversion {
         return this.movies;
     }
 
+    /**
+     * Method that converts a list of SerialInputData elements
+     * in Serial elements
+     */
     public List<Serial> convertSerial(final List<SerialInputData> serials1) {
         this.serials.clear();
 

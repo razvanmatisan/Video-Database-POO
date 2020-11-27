@@ -15,6 +15,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class ActorDB {
+    /**
+     * Database that stores all actors from input
+     */
     private final HashMap<String, Actor> actorHashMap = new HashMap<>();
 
     public ActorDB(final List<Actor> actors) {
@@ -23,8 +26,13 @@ public final class ActorDB {
         }
     }
 
-    /* ////////////////////// Queries for Actor ////////////////////// */
-    /* /////////// 1. Average /////////// */
+    /**
+     * Method that returns the first "number" actors, sorted by their rating
+     * @param sortType sort type
+     * @param number number of names at return
+     * @param videoDB video database
+     * @return a list of first "number" actors after being sorted by actor rating
+     */
     public List<String> average(final String sortType, final int number, final VideoDB videoDB) {
         List<Actor> actors = new ArrayList<>();
 
@@ -49,12 +57,18 @@ public final class ActorDB {
         return copyActors;
     }
 
-    /* /////////// 2. Awards /////////// */
+    /**
+     * Method that returns the names of all filtered actors, sorted by their number of awards
+     * @param sortType sort type
+     * @param filters criteria for selecting the actors
+     * @return a list of actors after being filtered and sorted by their number of awards
+     */
     public List<String> awards(final String sortType, final List<List<String>> filters) {
         List<ActorsAwards> filterActorAwards = new ArrayList<>();
         List<Actor> actors = new ArrayList<>();
 
-        List<String> awards = filters.get(3);
+        final int index = 3;
+        List<String> awards = filters.get(index);
 
         for (String award : awards) {
             filterActorAwards.add(Utils.stringToAwards(award));
@@ -79,7 +93,11 @@ public final class ActorDB {
         return copyActors;
     }
 
-    /* /////////// 3. Filter Description /////////// */
+    /**
+     * Method that filters the actors by some keywords from their description
+     * @param actors list of all actors
+     * @param words list of words that should be in an actor's description
+     */
     private void filterActorsByDescription(final List<Actor> actors, final List<String> words) {
         for (Actor actor : actorHashMap.values()) {
             int ok = 1;
@@ -98,6 +116,12 @@ public final class ActorDB {
             }
         }
     }
+
+    /**
+     * @param sortType sort type
+     * @param filters criteria for selecting the actors
+     * @return a list of actors after being filtered and sorted by their description
+     */
     public List<String> filterDescription(final String sortType, final List<List<String>> filters) {
         List<Actor> actors = new ArrayList<>();
 

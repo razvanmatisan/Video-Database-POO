@@ -7,6 +7,10 @@ import user.UserDB;
 
 import java.util.List;
 
+/**
+ * A Factory Class that generates object of concrete class
+ * (Command, Query, Recommendation) based on information from input
+ */
 public final class ActionFactory {
     private final VideoDB videoDB;
     private final ActorDB actorDB;
@@ -18,6 +22,10 @@ public final class ActionFactory {
         this.userDB = userDB;
     }
 
+    /**
+     * @param action stores the information from input
+     * @return Query/Command/Recommendation object
+     */
     public Action getAction(final ActionInputData action) {
         String actionType = action.getActionType();
         String type = action.getType();
@@ -46,7 +54,7 @@ public final class ActionFactory {
             }
             case("recommendation") -> {
                 return new Recommendation(actionId, type, username, genre,
-                        videoDB, actorDB, userDB);
+                        videoDB, userDB);
             }
             default -> throw new IllegalStateException("Unexpected value: " + actionType);
         }

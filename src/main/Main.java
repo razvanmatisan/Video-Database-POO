@@ -111,6 +111,8 @@ public final class Main {
         for (ActionInputData command : commands) {
             Action action = actionFactory.getAction(command);
             JSONObject out = action.callAction(fileWriter);
+
+            // noinspection unchecked
             arrayResult.add(out);
         }
 

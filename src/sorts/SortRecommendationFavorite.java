@@ -4,6 +4,10 @@ import entertainment.Video;
 
 import java.util.List;
 
+/**
+ * Class that implements the operation of desc sorting videos by number of favorites.
+ * Second criteria is their appearance in database.
+ */
 public final class SortRecommendationFavorite implements SortRecommendation {
     @Override
     public void sort(final List<Video> videos) {

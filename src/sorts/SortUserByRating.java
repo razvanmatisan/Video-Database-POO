@@ -4,6 +4,10 @@ import user.User;
 
 import java.util.List;
 
+/**
+ * Class that implements the operation of sorting users
+ * by their number of given ratings.
+ */
 public final class SortUserByRating implements SortUser {
 
     @Override

@@ -138,6 +138,4 @@ public final class Checker {
         System.out.println("-----------------------------");
         System.out.println("TOTAL = " + score + "/80");
     }
-
-
 }

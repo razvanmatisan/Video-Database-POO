@@ -13,9 +13,20 @@ import java.util.HashMap;
 import java.util.List;
 
 public final class VideoDB {
+    /**
+     * List of all movies from input
+     */
     private final List<Video> movies = new ArrayList<>();
+
+    /**
+     * List of all serials from input
+     */
     private final List<Video> serials = new ArrayList<>();
 
+    /**
+     * Database that stores the genre of a movie and the the total number of views
+     * of users who watch videos of this genre
+     */
     private final HashMap<String, Integer> popularGenres = new HashMap<>();
 
     public VideoDB(final List<Movie> movies, final List<Serial> series) {
@@ -35,6 +46,9 @@ public final class VideoDB {
         return serials;
     }
 
+    /**
+     * Set the index of all videos in order of appearance from input.
+     */
     public void setIndexDatabase() {
         int index = 0;
 
@@ -49,6 +63,11 @@ public final class VideoDB {
         }
     }
 
+    /**
+     * Method that finds a movie in database after its title
+     * @param title the title of the movie
+     * @return the found movie or null in case it's not found
+     */
     public Video findMovie(final String title) {
         for (Video movie : movies) {
             if (movie.getTitle().equals(title)) {
@@ -58,6 +77,11 @@ public final class VideoDB {
         return null;
     }
 
+    /**
+     * Method that finds a serial in database after its title
+     * @param title the title of the movie
+     * @return the found serial or null in case it's not found
+     */
     public Video findSerial(final String title) {
         for (Video serial : serials) {
             if (serial.getTitle().equals(title)) {
@@ -67,6 +91,9 @@ public final class VideoDB {
         return null;
     }
 
+    /**
+     * Filter all videos by a given genre
+     */
     public void setVideosByGenre(final String genre, final List<Video> videos) {
         for (Video movie : movies) {
             if (movie.getGenres().contains(genre)) {
@@ -81,6 +108,10 @@ public final class VideoDB {
         }
     }
 
+    /**
+     * Add genres from videos from a given list of videos
+     * and/or update their number of views
+     */
     private void setPopularGenresVideos(final List<Video> videos) {
         for (Video video : videos) {
             ArrayList<String> genres = video.getGenres();
@@ -96,11 +127,18 @@ public final class VideoDB {
         }
     }
 
+    /**
+     * Complete the entire database that stores genres and their number of views
+     */
     public void setPopularGenresAllVideos() {
         setPopularGenresVideos(movies);
         setPopularGenresVideos(serials);
     }
 
+    /**
+     * Method that sets for all videos the number of times a video is in the list of
+     * favorites of all users.
+     */
     public void setNumberFavoritesAllVideos(final UserDB userDB) {
         for (Video movie : movies) {
             userDB.setNumberFavoritesVideo(movie);
@@ -111,6 +149,9 @@ public final class VideoDB {
         }
     }
 
+    /**
+     * Method that sets for all videos the number of views a video has.
+     */
     public void setNumberViewsAllVideos(final UserDB userDB) {
         for (Video movie : movies) {
             userDB.setNumberViewsVideo(movie);
@@ -121,7 +162,12 @@ public final class VideoDB {
         }
     }
 
-    /* ////////////////////// Queries for Video ////////////////////// */
+    /**
+     * Method that filters the videos by specific criteria
+     * @param copyVideos list of videos where filtered videos are stored
+     * @param filters criteria of choosing the videos
+     * @param videos list of videos that need to be filtered
+     */
     private void filterVideos(final List<Video> copyVideos,
                               final List<List<String>> filters, final List<Video> videos) {
         List<String> years = filters.get(0);
@@ -138,6 +184,10 @@ public final class VideoDB {
         }
     }
 
+    /**
+     * Method that returns the first "number" videos.
+     * If number is greater thant the size of the list, returns the entire list.
+     */
     private List<String> getFinalListVideos(final int number, final List<Video> videos) {
         List<String> copyVideos = new ArrayList<>();
         for (int i = 0; i < Math.min(videos.size(), number); i++) {
@@ -147,7 +197,10 @@ public final class VideoDB {
         return copyVideos;
     }
 
-    /* /////////// 1. Rating /////////// */
+    /**
+     * Method that returns the first "number" videos
+     * after they were filtered and sorted by rating.
+     */
     public List<String> rating(final String sortType, final int number,
                                final List<List<String>> filters, final String objectType) {
         List<Video> videos = new ArrayList<>();
@@ -170,7 +223,10 @@ public final class VideoDB {
         return getFinalListVideos(number, videos);
     }
 
-    /* /////////// 2. Favorite /////////// */
+    /**
+     * Method that returns the first "number" videos
+     * after they were filtered and sorted by number of favorites.
+     */
     public List<String> favorite(final String sortType,
                                  final int number, final List<List<String>> filters,
                                  final UserDB userDB, final String objectType) {
@@ -193,7 +249,10 @@ public final class VideoDB {
         return getFinalListVideos(number, videos);
     }
 
-    /* /////////// 3. Longest /////////// */
+    /**
+     * Method that returns the first "number" videos
+     * after they were filtered and sorted by their duration.
+     */
     public List<String> longest(final String sortType, final int number,
                                 final List<List<String>> filters, final String objectType) {
         List<Video> videos = new ArrayList<>();
@@ -210,7 +269,10 @@ public final class VideoDB {
         return getFinalListVideos(number, videos);
     }
 
-    /* /////////// 4. Most Viewed /////////// */
+    /**
+     * Method that returns the first "number" videos
+     * after they were filtered and sorted by their number of views.
+     */
     public List<String> mostViewed(final String sortType,
                                    final int number, final List<List<String>> filters,
                                    final String objectType, final UserDB userDB) {

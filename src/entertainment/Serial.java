@@ -65,6 +65,10 @@ public final class Serial extends Video {
         }
     }
 
+    /**
+     * Calculate the duration of the entire serial
+     * @return the total duration
+     */
     private Integer calculateDuration() {
         int totalDuration = 0;
 

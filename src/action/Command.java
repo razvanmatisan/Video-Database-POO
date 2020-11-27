@@ -1,5 +1,6 @@
 package action;
 
+import common.Constants;
 import entertainment.Video;
 import entertainment.VideoDB;
 import fileio.Writer;
@@ -12,7 +13,6 @@ import java.util.HashMap;
 
 public final class Command implements Action {
     private final VideoDB videoDB;
-//    private final ActorDB actorDB;
     private final UserDB userDB;
 
     private final String type;
@@ -27,7 +27,6 @@ public final class Command implements Action {
                    final VideoDB videoDB, final UserDB userDB) {
         this.type = type;
         this.videoDB = videoDB;
-        //this.actorDB = actorDB;
         this.userDB = userDB;
         this.title = title;
         this.actionId = actionId;
@@ -41,26 +40,26 @@ public final class Command implements Action {
         HashMap<String, User> userHashMap = userDB.getUserHashMap();
         String message;
         switch (type) {
-            case "favorite":
+            case Constants.FAVORITE:
                 message = userHashMap.get(username).favorite(title);
 
-                if (message.equals("Added to Favorites!")) {
+                if (message.equals(Constants.ADDED_FAVORITES)) {
                     return fileWriter.writeFile(actionId, "",
-                                "success -> " + title + " was added as favourite");
-                } else if (message.equals("Already in Favorites!")) {
+                                Constants.SUCCES + title + " was added as favourite");
+                } else if (message.equals(Constants.ALREADY_FAVORITES)) {
                     return fileWriter.writeFile(actionId, "",
-                            "error -> " + title + " is already in favourite list");
+                            Constants.ERROR + title + " is already in favourite list");
                 } else {
                     return fileWriter.writeFile(actionId, "",
-                            "error -> " + title + " is not seen");
+                            Constants.ERROR + title + " is not seen");
                 }
-            case "view":
+            case Constants.VIEW:
                 User user = userHashMap.get(username);
                 user.view(title);
-                return fileWriter.writeFile(actionId, "", "success -> " + title
+                return fileWriter.writeFile(actionId, "", Constants.SUCCES + title
                                 + " was viewed with total views of "
                                 + user.getHistory().get(title));
-            case "rating":
+            case Constants.RATING:
                 user = userHashMap.get(username);
                 Video video;
 
@@ -73,24 +72,24 @@ public final class Command implements Action {
                 assert video != null;
                 message = user.ratingVideo(video, grade, seasonNumber);
 
-                if (message.equals("Added rating!")) {
+                if (message.equals(Constants.ADDED_RATING)) {
                     return fileWriter.writeFile(actionId, "",
-                            "success -> " + title
+                            Constants.SUCCES + title
                                     + " was rated with " + grade + " by "
                                     + user.getUsername());
 
-                } else if (message.equals("Already rated!")) {
+                } else if (message.equals(Constants.ALREADY_RATED)) {
                     return fileWriter.writeFile(actionId, "",
-                            "error -> " + title
+                            Constants.ERROR + title
                                     + " has been already rated");
 
                 } else {
                     return fileWriter.writeFile(actionId, "",
-                            "error -> " + title
+                            Constants.ERROR + title
                                     + " is not seen");
                 }
             default:
-                throw new IllegalStateException("Unexpected value: " + type);
+                throw new IllegalStateException(Constants.UNEXPECTED_VALUE + type);
         }
     }
 }

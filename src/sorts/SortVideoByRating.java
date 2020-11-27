@@ -4,6 +4,9 @@ import entertainment.Video;
 
 import java.util.List;
 
+/**
+ * Class that implements the operation of sorting videos by their rating.
+ */
 public final class SortVideoByRating implements SortVideo {
 
     @Override

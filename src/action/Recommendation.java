@@ -1,6 +1,6 @@
 package action;
 
-import actor.ActorDB;
+import common.Constants;
 import entertainment.VideoDB;
 import fileio.Writer;
 import org.json.simple.JSONObject;
@@ -12,7 +12,6 @@ import java.util.List;
 
 public final class Recommendation implements Action {
     private final VideoDB videoDB;
-    private final ActorDB actorDB;
     private final UserDB userDB;
     private final String type;
 
@@ -22,10 +21,9 @@ public final class Recommendation implements Action {
 
     public Recommendation(final int actionId, final String type,
                           final String username, final String genre,
-                          final VideoDB videoDB, final ActorDB actorDB, final UserDB userDB) {
+                          final VideoDB videoDB, final UserDB userDB) {
         this.type = type;
         this.videoDB = videoDB;
-        this.actorDB = actorDB;
         this.userDB = userDB;
         this.username = username;
         this.actionId = actionId;
@@ -36,7 +34,7 @@ public final class Recommendation implements Action {
     public JSONObject callAction(final Writer fileWriter) throws IOException {
         User user = userDB.getUserHashMap().get(username);
         switch (type) {
-            case "standard" -> {
+            case Constants.STANDARD -> {
                 String standardRecommendation = user.standard(videoDB);
                 if (!standardRecommendation.equals("")) {
                     return fileWriter.writeFile(actionId, "",
@@ -46,7 +44,8 @@ public final class Recommendation implements Action {
                             "StandardRecommendation cannot be applied!");
                 }
             }
-            case "best_unseen" -> {
+
+            case Constants.BEST_UNSEEN -> {
                 String bestRatedUnseenRecommendation = user.bestUnseen(videoDB);
                 if (!bestRatedUnseenRecommendation.equals("")) {
                     return fileWriter.writeFile(actionId, "",
@@ -57,7 +56,7 @@ public final class Recommendation implements Action {
                             "BestRatedUnseenRecommendation cannot be applied!");
                 }
             }
-            case "popular" -> {
+            case Constants.POPULAR -> {
                 String popularRecommendation = user.popular(videoDB, userDB);
                 if (!popularRecommendation.equals("")) {
                     return fileWriter.writeFile(actionId, "",
@@ -67,7 +66,8 @@ public final class Recommendation implements Action {
                             "PopularRecommendation cannot be applied!");
                 }
             }
-            case "favorite" -> {
+
+            case Constants.FAVORITE -> {
                 String favoriteRecommendation = user.favoriteRecommendation(videoDB, userDB);
                 if (!favoriteRecommendation.equals("")) {
                     return fileWriter.writeFile(actionId, "",
@@ -77,7 +77,8 @@ public final class Recommendation implements Action {
                             "FavoriteRecommendation cannot be applied!");
                 }
             }
-            case "search" -> {
+
+            case Constants.SEARCH -> {
                 List<String> searchRecommendation = user.search(genre, userDB, videoDB);
                 if (!searchRecommendation.isEmpty()) {
                     return fileWriter.writeFile(actionId, "",

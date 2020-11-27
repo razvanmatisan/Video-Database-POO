@@ -4,6 +4,9 @@ import entertainment.Video;
 
 import java.util.List;
 
+/**
+ * Class that implements the operation of sorting videos by number of favorites.
+ */
 public final class SortVideoByFavorite implements SortVideo {
     @Override
     public void sort(final String sortType, final List<Video> videos) {

@@ -8,9 +8,24 @@ public abstract class Video {
     private final ArrayList<String> cast;
     private final ArrayList<String> genres;
 
+    /**
+     * The index from database
+     */
     protected Integer indexInDatabase;
+
+    /**
+     * The total number of views the users watched the video
+     */
     protected Integer numberViews;
+
+    /**
+     * The total number of appearances of a video in all users' favorite list
+     */
     protected Integer numberOfFavorites;
+
+    /**
+     * Video Rating
+     */
     protected Double ratingVideo;
 
     public Video(final String title, final int year,
@@ -41,37 +56,51 @@ public abstract class Video {
         return genres;
     }
 
-    public Integer getNumberOfFavorites() {
+    public final Integer getNumberOfFavorites() {
         return numberOfFavorites;
     }
 
-    public void setNumberOfFavorites(final Integer numberOfFavorites) {
+    public final void setNumberOfFavorites(final Integer numberOfFavorites) {
         this.numberOfFavorites = numberOfFavorites;
     }
 
-    public Double getRatingVideo() {
+    public final Double getRatingVideo() {
         return ratingVideo;
     }
 
-    public Integer getNumberViews() {
+    public final Integer getNumberViews() {
         return numberViews;
     }
 
-    public void setNumberViews(final Integer numberViews) {
+    public final void setNumberViews(final Integer numberViews) {
         this.numberViews = numberViews;
     }
 
-    public Integer getIndexInDatabase() {
+    public final Integer getIndexInDatabase() {
         return indexInDatabase;
     }
 
-    public void setIndexInDatabase(final Integer indexDatabase) {
+    public final void setIndexInDatabase(final Integer indexDatabase) {
         this.indexInDatabase = indexDatabase;
     }
 
+    /**
+     * Add a rating in the list of ratings given by the users.
+     * @param rating the new rating
+     * @param numberSeason the number of the season
+     *                     for which the rating is. (= 0 if video is a movie)
+     */
     public abstract void giveRating(double rating, int numberSeason);
 
+    /**
+     * Method that returns the total duration of a video.
+     */
     public abstract Integer getDuration();
 
+    /**
+     * Method that calculates the final rating of a video.
+     * If it's a movie, it's been calculated the average rating of given ratings.
+     * If it's a serial, it's been calculated the average rating of all seasons.
+     */
     public abstract void calculateFinalRating();
 }

@@ -4,6 +4,9 @@ import actor.Actor;
 
 import java.util.List;
 
+/**
+ * Class that implements the operation of sorting actors by their awards
+ */
 public final class SortActorByAwards implements SortActor {
     @Override
     public void sort(final List<Actor> actors, final String sortType) {

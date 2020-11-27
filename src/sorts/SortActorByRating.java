@@ -4,6 +4,9 @@ import actor.Actor;
 
 import java.util.List;
 
+/**
+ * Class that implements the operation of sorting actors by their rating.
+ */
 public final class SortActorByRating implements SortActor {
 
     @Override

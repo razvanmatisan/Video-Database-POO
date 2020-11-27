@@ -20,7 +20,16 @@ public final class User {
     private final Map<String, Integer> history;
     private final ArrayList<String> favoriteVideos;
 
+    /**
+     * Database that stores the videos which a user rated along with
+     * the list of seasons that he rated, too.
+     * For movies, the list will contain only the zero number.
+     */
     private final Map<String, ArrayList<Integer>> videosWithRating;
+
+    /**
+     * Number of ratings that a user gave.
+     */
     private Integer numberGivenRatings;
 
     public User(final String username, final String subscriptionType,
@@ -50,7 +59,9 @@ public final class User {
         return numberGivenRatings;
     }
 
-    /* ////////////////////// Commands ////////////////////// */
+    /**
+     * Method that implements "favorite" command.
+     */
     public String favorite(final String title) {
         if (favoriteVideos.contains(title)) {
             return "Already in Favorites!";
@@ -61,6 +72,9 @@ public final class User {
         return "Haven't been seen yet!";
     }
 
+    /**
+     * Method that implements "view" command.
+     */
     public void view(final String title) {
         if (history.containsKey(title)) {
             history.put(title, history.get(title) + 1);
@@ -69,6 +83,10 @@ public final class User {
         }
     }
 
+    /**
+     * Method that implements "rating" command.
+     * Also, it updates videosWithRating and numberGivingRatings fields.
+     */
     public String ratingVideo(final Video video, final double rating, final int numberSeason) {
         String title = video.getTitle();
         if (videosWithRating.containsKey(title)) {
@@ -96,8 +114,9 @@ public final class User {
         return "Not seen!";
     }
 
-    /* ////////////////////// Recommendations ////////////////////// */
-
+    /**
+     * Method that finds the first unseen video from a given list
+     */
     private String firstUnseenVideo(final List<Video> videos) {
         for (Video video : videos) {
             String title = video.getTitle();
@@ -108,7 +127,10 @@ public final class User {
         return "";
     }
 
-    /* /////////// 1. Standard /////////// */
+    /**
+     * Method that implements standard recommendation
+     * @return the first unseen video
+     */
     public String standard(final VideoDB videoDB) {
         List<Video> movies = videoDB.getMovies();
         List<Video> serials = videoDB.getSerials();
@@ -121,7 +143,9 @@ public final class User {
         return title;
     }
 
-    /* /////////// 2. Best Unseen /////////// */
+    /**
+     * Method that update the final rating of each video and copy all videos in another list.
+     */
     private void updateRatingVideos(final List<Video> copyVideos, final List<Video> videos) {
         for (Video video : videos) {
             video.calculateFinalRating();
@@ -129,6 +153,9 @@ public final class User {
         }
     }
 
+    /**
+     * Method that implements bestUnseen recommendation
+     */
     public String bestUnseen(final VideoDB videoDB) {
         List<Video> videos = new ArrayList<>();
 
@@ -145,7 +172,9 @@ public final class User {
         return firstUnseenVideo(videos);
     }
 
-    /* /////////// 3. Popular /////////// */
+    /**
+     * Method that finds the first video of the most popular genre.
+     */
     private String findVideoByPopularGenre(final List<Video> movies, final List<Video> serials,
                                            final HashMap<String, Integer> popularGenres) {
         while (!popularGenres.isEmpty()) {
@@ -168,6 +197,9 @@ public final class User {
         return "";
     }
 
+    /**
+     * Method that finds the first unseen video of a given genre
+     */
     private String findVideoByGenre(final String genre, final List<Video> videos) {
         String title;
         for (Video video : videos) {
@@ -179,6 +211,9 @@ public final class User {
         return "";
     }
 
+    /**
+     * Method that implements popular recommendation for premium users.
+     */
     public String popular(final VideoDB videoDB, final UserDB userDB) {
         if (subscriptionType.equals("PREMIUM")) {
             videoDB.setNumberViewsAllVideos(userDB);
@@ -196,7 +231,10 @@ public final class User {
     }
 
 
-    /* /////////// 4. Favorite /////////// */
+    /**
+     * Method that saves all given videos that are in at least one list of favorites of any user
+     * in another list of videos.
+     */
     private void filterFavoriteVideos(final List<Video> copyVideos, final List<Video> videos) {
         for (Video video : videos) {
             Integer numberFavorites = video.getNumberOfFavorites();
@@ -206,6 +244,9 @@ public final class User {
         }
     }
 
+    /**
+     * Method that implements favorite recommendation for premium users.
+     */
     public String favoriteRecommendation(final VideoDB videoDB, final UserDB userDB) {
         if (subscriptionType.equals("PREMIUM")) {
             List<Video> videos = new ArrayList<>();
@@ -228,6 +269,9 @@ public final class User {
         return "";
     }
 
+    /**
+     * Method that implements search recommendation for premium users.
+     */
     public List<String> search(final String genre, final UserDB userDB, final VideoDB videoDB) {
         if (subscriptionType.equals("PREMIUM")) {
             List<String> titles;

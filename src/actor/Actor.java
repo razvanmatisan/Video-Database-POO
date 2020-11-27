@@ -11,8 +11,15 @@ public final class Actor {
     private String careerDescription;
     private ArrayList<String> filmography;
     private final Map<ActorsAwards, Integer> awards;
+
+    /**
+     * The average rating of movies and serials an actor performed.
+     */
     private Double rating;
 
+    /**
+     * Total number of awards an actor won.
+     */
     private Integer numberAwards;
 
     public Actor(final String name, final String careerDescription,
@@ -62,6 +69,7 @@ public final class Actor {
         return numberAwards;
     }
 
+
     void setNumberAwardsOneActor() {
         Integer finalNumberAwards = 0;
 
@@ -72,6 +80,9 @@ public final class Actor {
         numberAwards = finalNumberAwards;
     }
 
+    /**
+     * Method that finds a video in database by giving its title
+     */
     private Video findVideo(final String title,
                             final List<Video> movies, final List<Video> serials) {
         for (Video movie : movies) {
@@ -89,6 +100,9 @@ public final class Actor {
         return null;
     }
 
+    /**
+     * Method that calculates the average rating of an actor
+     */
     public void calculateRating(final List<Video> movies, final List<Video> serials) {
         Video video;
 
