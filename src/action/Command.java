@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 import user.User;
 import user.UserDB;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 public final class Command implements Action {
@@ -36,7 +35,7 @@ public final class Command implements Action {
     }
 
     @Override
-    public JSONObject callAction(final Writer fileWriter) throws IOException {
+    public JSONObject callAction(final Writer fileWriter) {
         HashMap<String, User> userHashMap = userDB.getUserHashMap();
         String message;
         switch (type) {
@@ -44,19 +43,19 @@ public final class Command implements Action {
                 message = userHashMap.get(username).favorite(title);
 
                 if (message.equals(Constants.ADDED_FAVORITES)) {
-                    return fileWriter.writeFile(actionId, "",
-                                Constants.SUCCES + title + " was added as favourite");
+                    return fileWriter.writeFile(actionId,
+                            Constants.SUCCESS + title + " was added as favourite");
                 } else if (message.equals(Constants.ALREADY_FAVORITES)) {
-                    return fileWriter.writeFile(actionId, "",
+                    return fileWriter.writeFile(actionId,
                             Constants.ERROR + title + " is already in favourite list");
                 } else {
-                    return fileWriter.writeFile(actionId, "",
+                    return fileWriter.writeFile(actionId,
                             Constants.ERROR + title + " is not seen");
                 }
             case Constants.VIEW:
                 User user = userHashMap.get(username);
                 user.view(title);
-                return fileWriter.writeFile(actionId, "", Constants.SUCCES + title
+                return fileWriter.writeFile(actionId, Constants.SUCCESS + title
                                 + " was viewed with total views of "
                                 + user.getHistory().get(title));
             case Constants.RATING:
@@ -73,18 +72,18 @@ public final class Command implements Action {
                 message = user.ratingVideo(video, grade, seasonNumber);
 
                 if (message.equals(Constants.ADDED_RATING)) {
-                    return fileWriter.writeFile(actionId, "",
-                            Constants.SUCCES + title
+                    return fileWriter.writeFile(actionId,
+                            Constants.SUCCESS + title
                                     + " was rated with " + grade + " by "
                                     + user.getUsername());
 
                 } else if (message.equals(Constants.ALREADY_RATED)) {
-                    return fileWriter.writeFile(actionId, "",
+                    return fileWriter.writeFile(actionId,
                             Constants.ERROR + title
                                     + " has been already rated");
 
                 } else {
-                    return fileWriter.writeFile(actionId, "",
+                    return fileWriter.writeFile(actionId,
                             Constants.ERROR + title
                                     + " is not seen");
                 }

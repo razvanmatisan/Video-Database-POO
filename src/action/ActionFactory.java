@@ -1,6 +1,7 @@
 package action;
 
 import actor.ActorDB;
+import common.Constants;
 import entertainment.VideoDB;
 import fileio.ActionInputData;
 import user.UserDB;
@@ -44,15 +45,15 @@ public final class ActionFactory {
 
 
         switch (actionType) {
-            case ("command") -> {
+            case (Constants.COMMAND) -> {
                 return new Command(actionId, type, title, username, grade, seasonNumber,
                         videoDB, userDB);
             }
-            case("query") -> {
+            case(Constants.QUERY) -> {
                 return new Query(actionId, criteria, objectType, sortType, filters, number,
                         videoDB, actorDB, userDB);
             }
-            case("recommendation") -> {
+            case(Constants.RECOMMENDATION) -> {
                 return new Recommendation(actionId, type, username, genre,
                         videoDB, userDB);
             }

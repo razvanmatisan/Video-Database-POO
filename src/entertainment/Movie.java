@@ -25,7 +25,7 @@ public final class Movie extends Video {
     @Override
     public void giveRating(final double rating, final int numberSeason) {
         /*
-        Daca are sezoane, atunci nu este Movie.
+        If this video has not seasons, then it is a Movie.
          */
         if (numberSeason != 0) {
             return;

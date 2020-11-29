@@ -28,10 +28,6 @@ public final class InputLoader {
         this.inputPath = inputPath;
     }
 
-    public String getInputPath() {
-        return inputPath;
-    }
-
     /**
      * The method reads the database
      * @return an Input object
@@ -170,8 +166,6 @@ public final class InputLoader {
 
     /**
      * The method reads the actions from input file
-     * @param jsonObject
-     * @param size
      * @return A list of actions
      */
     public List<ActionInputData> readActions(final JSONObject jsonObject, final int size) {

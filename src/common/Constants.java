@@ -54,7 +54,7 @@ public final class Constants {
     public static final String COMMAND = "command";
     public static final String RECOMMENDATION = "recommendation";
 
-    public static final String SUCCES = "success -> ";
+    public static final String SUCCESS = "success -> ";
     public static final String ERROR = "error -> ";
     public static final String ADDED_RATING = "Added rating!";
     public static final String ALREADY_RATED = "Already rated!";
